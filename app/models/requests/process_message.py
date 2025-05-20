@@ -12,7 +12,3 @@ class ProcessMessageRequest(BaseModel):
     conversation_history: List[Message]
     current_prospect_message: str
     prospect_id: Optional[str] = None
-
-class ConversationContext(BaseModel):
-    role: Literal["user", "assistant"]
-    content: str

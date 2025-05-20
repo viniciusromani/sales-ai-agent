@@ -1,5 +1,5 @@
 from fastapi import Depends
-from ..models.schema import ProcessMessageRequest
+from ..models.requests import ProcessMessageRequest
 from ..services.message import MessageService
 
 

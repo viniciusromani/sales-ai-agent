@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from ..models.schema import ProcessMessageRequest
+from ..models.requests import ProcessMessageRequest
 from ..domain.message import MessageDomain
 
 
