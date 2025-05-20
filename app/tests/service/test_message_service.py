@@ -1,6 +1,6 @@
 import pytest
 from app.services.message import MessageService
-from app.agent.sales import Agent
+from app.agents.sales import Agent
 from unittest.mock import AsyncMock, patch
 
 

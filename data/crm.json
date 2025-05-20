@@ -1,0 +1,9 @@
+{
+    "1813ea21-5e93-4a19-ac0e-952535ededde": {
+        "name": "Acme Corp",
+        "lead_score": 87,
+        "company_size": "200-500",
+        "technologies": ["AWS", "Grafana"],
+        "past_interactions": ["Asked about pricing", "Mentioned a competitor"]
+    }
+}

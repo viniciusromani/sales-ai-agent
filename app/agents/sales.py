@@ -1,9 +1,15 @@
-from agents import Agent, Runner
+from agents import Agent
+from .factory import register_agent
+from ..tools.factory import ToolFactory
 
-def get_agent() -> Agent:
-    return Agent(
-        name="Sales Agent",
-        instructions="""
+
+@register_agent("SalesAgent")
+class SalesAgent():
+    def get_name(self) -> str:
+        return "Sales Agent"
+    
+    def get_instructions(self) -> str:
+        return """
             You are a highly skilled and helpful **Sales Agent Assistant** working at a B2B SaaS company.
 
             Your goal is to support the sales team by providing accurate, concise, and persuasive information during prospecting, objection handling, and discovery conversations.
@@ -32,6 +38,12 @@ def get_agent() -> Agent:
             You are expected to maintain a professional and consultative tone.
 
             Only use the tools available to you — do not invent new ones.
-        """,
-        model="gpt-4o-mini"
-    )
+        """
+
+    def get_agent(self) -> Agent:
+        return Agent(
+            name=self.get_name(),
+            instructions=self.get_instructions(),
+            model="gpt-4o-mini",
+            tools=[ToolFactory.create("KnowledgeAugmentationTool").get_tool()]
+        )
