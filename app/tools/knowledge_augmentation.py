@@ -1,8 +1,11 @@
+import json
+
 from typing import Any, Dict, Literal, Optional
 from pydantic import BaseModel
 from agents import RunContextWrapper, FunctionTool
 from .factory import register_tool
 from .custom_tool import CustomTool
+from .. import PROJECT_ROOT
 
 
 class Args(BaseModel):
@@ -16,16 +19,9 @@ class KnowledgeAugmentationTool(CustomTool[Args]):
         super().__init__(Args)
 
     def fetch_prospect_details(self, prospect_id: str) -> Dict[str, Any]:
-        MOCK_CRM_DATA = {
-            "123": {
-                "name": "Acme Corp",
-                "lead_score": 87,
-                "company_size": "2t01-500",
-                "technologies": ["AWS", "Snowflake"],
-                "past_interactions": ["Asked about pricing", "Mentioned a competitor"],
-            }
-        }
-        return MOCK_CRM_DATA.get(prospect_id, {"error": "Prospect not found"})
+        with open(str(PROJECT_ROOT) + "/data/crm.json") as crm_file:
+            MOCK_CRM = json.load(crm_file)
+            return MOCK_CRM.get(prospect_id, {"error": "Prospect not found"})
 
     def query_knowledge_base(self, query: str) -> Dict[str, Any]:
         return {

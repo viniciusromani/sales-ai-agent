@@ -17,6 +17,8 @@ class SalesAgent():
             You have access to one tool, `KnowledgeAugmentationTool`, which allows you to:
                 - Fetch CRM details using `fetch_prospect_details(prospect_id: str)`.
                     - Use this to retrieve prospect information such as company size, technologies used, past interactions, and lead score.
+                    - If the message includes a line like `Prospect ID: <uuid>`, always use that as the `prospect_id`, even if other IDs are mentioned in the question.
+                    - If no explicit `Prospect ID:` line is present, you may attempt to extract a valid UUID from the user's message — but avoid using short numeric IDs.
                 - Search the sales knowledge base using `query_knowledge_base(query: str, filters: Optional[dict])`.
                     - Use this to answer product-related questions, pricing, competitor comparisons, and find strategic sales playbook snippets.
                     - Formulate clear and specific queries, especially when addressing objections or comparing value propositions.

@@ -18,8 +18,12 @@ class MessageDomain:
                 {"role": message.sender, "content": message.content}
                 for message in request.conversation_history
             ])
-        
-        inputs.append({"role": "user", "content": request.current_prospect_message})
+
+        user_message = request.current_prospect_message
+        if request.prospect_id:
+            user_message += "\n\nProspect ID: " + request.prospect_id
+
+        inputs.append({"role": "user", "content": user_message})
 
         result = await self.service.run_agent(inputs)
         print(result)
