@@ -4,3 +4,5 @@ openai-agents
 python-dotenv
 pytest
 pytest-asyncio
+qdrant-client
+openai

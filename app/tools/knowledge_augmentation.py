@@ -3,8 +3,11 @@ import json
 from typing import Any, Dict, Literal, Optional
 from pydantic import BaseModel
 from agents import RunContextWrapper, FunctionTool
+
 from .factory import register_tool
 from .custom_tool import CustomTool
+from ..external.qdrant import QdrantClientSingleton, COLLECTION_NAME, LIMIT
+from ..external.openai import OpenAIClientSingleton, EMBEDDING_MODEL
 from .. import PROJECT_ROOT
 
 
@@ -17,19 +20,33 @@ class Args(BaseModel):
 class KnowledgeAugmentationTool(CustomTool[Args]):
     def __init__(self):
         super().__init__(Args)
+        self.qdrant = QdrantClientSingleton.get_instance()
+        self.openai = OpenAIClientSingleton.get_instance()
 
     def fetch_prospect_details(self, prospect_id: str) -> Dict[str, Any]:
         with open(str(PROJECT_ROOT) + "/data/crm.json") as crm_file:
             MOCK_CRM = json.load(crm_file)
             return MOCK_CRM.get(prospect_id, {"error": "Prospect not found"})
 
-    def query_knowledge_base(self, query: str) -> Dict[str, Any]:
+    async def query_knowledge_base(self, query: str) -> Dict[str, Any]:
+        embedded_query = self.openai.embeddings.create(
+            input=query,
+            model=EMBEDDING_MODEL
+        ).data[0].embedding
+
+        results = await self.qdrant.query_points(
+            collection_name=COLLECTION_NAME,
+            query=embedded_query,
+            limit=LIMIT
+        )
+
+        result = None
+        if results.points:
+            result = results.points[0].payload["text"]
+
         return {
             "query": query,
-            "results": [
-                {"document": "Sales Playbook", "snippet": "Handle pricing objections by..."},
-                {"document": "Product Overview", "snippet": "Our product supports SSO and..."},
-            ]
+            "result": result
         }
     
     def get_description(self) -> str:
@@ -60,6 +77,6 @@ class KnowledgeAugmentationTool(CustomTool[Args]):
         if parsed.action == "fetch_prospect_details":
             return self.fetch_prospect_details(parsed.prospect_id)
         if parsed.action == "query_knowledge_base":
-            return self.query_knowledge_base(parsed.query)
+            return await self.query_knowledge_base(parsed.query)
         
         raise ValueError(f"Unsupported action: {parsed.action}")

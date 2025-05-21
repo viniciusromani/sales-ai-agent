@@ -22,7 +22,7 @@ class SalesAgent():
                 - Search the sales knowledge base using `query_knowledge_base(query: str, filters: Optional[dict])`.
                     - Use this to answer product-related questions, pricing, competitor comparisons, and find strategic sales playbook snippets.
                     - Formulate clear and specific queries, especially when addressing objections or comparing value propositions.
-
+                    
             **General Behavior Guidelines:**
             - Always be proactive: anticipate what kind of information the salesperson or customer might need next.
             - Be persuasive, but grounded in facts retrieved from the knowledge base.
