@@ -26,7 +26,8 @@ class KnowledgeAugmentationTool(CustomTool[Args]):
     def fetch_prospect_details(self, prospect_id: str) -> Dict[str, Any]:
         with open(str(PROJECT_ROOT) + "/data/crm.json") as crm_file:
             MOCK_CRM = json.load(crm_file)
-            return MOCK_CRM.get(prospect_id, {"error": "Prospect not found"})
+            result = MOCK_CRM.get(prospect_id, {"error": "Prospect not found"})
+            return json.dumps(result)
 
     async def query_knowledge_base(self, query: str) -> Dict[str, Any]:
         embedded_query = self.openai.embeddings.create(
@@ -42,12 +43,13 @@ class KnowledgeAugmentationTool(CustomTool[Args]):
 
         result = None
         if results.points:
-            result = results.points[0].payload["text"]
-
-        return {
+            texts = [point.payload["text"] for point in results.points]
+            result = "\n".join(texts)
+        
+        return json.dumps({
             "query": query,
             "result": result
-        }
+        })
     
     def get_description(self) -> str:
         return """

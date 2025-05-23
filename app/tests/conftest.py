@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 
+
 @pytest.fixture
 def mock_qdrant():
     with patch("app.external.qdrant.QdrantClientSingleton.get_instance") as mock:

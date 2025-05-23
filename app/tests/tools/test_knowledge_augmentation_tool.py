@@ -20,13 +20,13 @@ class TestKnowledgeAugmentationTool:
     @patch("builtins.open", new_callable=mock_open, read_data=json.dumps(prospect_details))
     def test_fetch_prospect_details_found(self, mock_qdrant, mock_openai):
         tool = KnowledgeAugmentationTool()
-        details = tool.fetch_prospect_details("acb914e1-8eae-44e1-ae3c-74a048c71609")
+        details = json.loads(tool.fetch_prospect_details("acb914e1-8eae-44e1-ae3c-74a048c71609"))
         assert details == prospect_details["acb914e1-8eae-44e1-ae3c-74a048c71609"]
 
     @patch("builtins.open", new_callable=mock_open, read_data=json.dumps(prospect_details))
     def test_fetch_prospect_details_not_found(self, mock_qdrant, mock_openai):
         tool = KnowledgeAugmentationTool()
-        details = tool.fetch_prospect_details("ed2905f2-1702-4c65-a181-05bad2c8705e")
+        details = json.loads(tool.fetch_prospect_details("ed2905f2-1702-4c65-a181-05bad2c8705e"))
         assert details == { "error": "Prospect not found" }
 
     @pytest.mark.asyncio
@@ -40,8 +40,9 @@ class TestKnowledgeAugmentationTool:
         mock_qdrant.return_value.query_points.return_value = mock_result
         
         tool = KnowledgeAugmentationTool()
+        knowledge_str = await tool.query_knowledge_base("What is our company flagship product?")
+        knowledge = json.loads(knowledge_str)
 
-        knowledge = await tool.query_knowledge_base("What is our company flagship product?")
         assert knowledge["query"] == "What is our company flagship product?"
         assert knowledge["result"] == "Our flagship product is an incredible CRM"
     
@@ -54,7 +55,8 @@ class TestKnowledgeAugmentationTool:
         mock_qdrant.return_value.query_points.return_value = mock_result
         
         tool = KnowledgeAugmentationTool()
+        knowledge_str = await tool.query_knowledge_base("What is our company flagship product?")
+        knowledge = json.loads(knowledge_str)
 
-        knowledge = await tool.query_knowledge_base("What is our company flagship product?")
         assert knowledge["query"] == "What is our company flagship product?"
         assert knowledge["result"] == None

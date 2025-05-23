@@ -1,5 +1,5 @@
 from typing import Dict, Type
-from agents import Agent, Runner
+from agents import Agent, Runner, trace
 
 
 class AgentFactory:
