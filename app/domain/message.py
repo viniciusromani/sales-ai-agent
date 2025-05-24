@@ -1,21 +1,12 @@
-import json
-
 from fastapi import Depends
-from agents import RunItem
 
-from .mappers import StacktraceMapper
 from ..models.requests import ProcessMessageRequest
 from ..services.message import MessageService
 
 
 class MessageDomain:
-    def __init__(
-        self, 
-        service: MessageService = Depends(MessageService),
-        mapper: StacktraceMapper = Depends(StacktraceMapper)
-    ):
+    def __init__(self, service: MessageService = Depends(MessageService)):
         self.service = service
-        self.mapper = mapper
     
     async def process_message(self, request: ProcessMessageRequest) -> list[dict]:
         inputs = []
@@ -32,10 +23,4 @@ class MessageDomain:
         inputs.append({"role": "user", "content": user_message})
 
         result = await self.service.run_agent(inputs)
-        stacktrace = self.mapper.map_llm_stacktrace(result.new_items)
-
-        return { 
-            "inputs": inputs, 
-            "stacktrace": stacktrace, 
-            "output": result.final_output
-        }
+        return result.final_output

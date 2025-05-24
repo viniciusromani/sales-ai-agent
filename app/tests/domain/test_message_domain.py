@@ -3,7 +3,6 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 from app.domain.message import MessageDomain
-from app.domain.mappers import StacktraceMapper
 from app.models.requests import ProcessMessageRequest
 from app.services.message import MessageService
 
@@ -22,10 +21,7 @@ class TestMessageDomain:
         mock_service = AsyncMock(spec=MessageService)
         mock_service.run_agent.return_value = mock
 
-        mock_mapper = MagicMock(spec=StacktraceMapper)
-        mock_mapper.map_llm_stacktrace.return_value = mock.new_items
-
-        domain = MessageDomain(service=mock_service, mapper=mock_mapper)
+        domain = MessageDomain(service=mock_service)
 
         request = ProcessMessageRequest(
             conversation_history=[
@@ -44,7 +40,6 @@ class TestMessageDomain:
             { "role": "user", "content": "What is your pricing?" },
         ]
         mock_service.run_agent.assert_awaited_once_with(expected_inputs)
-        mock_mapper.map_llm_stacktrace.assert_called_with(mock.new_items)
 
         assert result["inputs"] == expected_inputs
         assert result["stacktrace"] == mock.new_items

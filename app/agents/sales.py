@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
-from agents import Agent
+from agents import Agent, AgentOutputSchema
 from .. import PROJECT_ROOT, logger, raise_exception
 
 from .factory import register_agent
 from ..tools.factory import ToolFactory
+from ..models.entities import SalesAgentOutput
 
 
 @register_agent("SalesAgent")
@@ -39,5 +40,6 @@ class SalesAgent():
             name=self.get_name(),
             instructions=self.get_instructions(),
             model="gpt-4o-mini",
-            tools=[ToolFactory.create("KnowledgeAugmentationTool").get_tool()]
+            tools=[ToolFactory.create("KnowledgeAugmentationTool").get_tool()],
+            output_type=AgentOutputSchema(SalesAgentOutput, strict_json_schema=False)
         )

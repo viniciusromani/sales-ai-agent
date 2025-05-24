@@ -40,6 +40,16 @@ Think carefully before using your tool, focus on using the right capability to c
 You MUST plan extensively before each function call, and reflect extensively on the outcomes of the previous function calls. DO NOT do this entire process by making function calls only, as this can impair your ability to solve the problem and think insightfully.
 
 
+# Output
+
+Your output should be in the following format:
+    * `detailed_analysis`: A summary of its understanding of the prospect's message and context.
+    * `suggested_response_draft`: A concise, helpful, and contextually appropriate response to the prospect.
+    * `tool_usage_log`: A log of which tools/sub-functions were called, with what inputs, and a summary of their outputs. This is crucial for debugging and evaluation.
+    * `confidence_score`: An estimated confidence (0.0-1.0) in the `suggested_response_draft`.
+    * `reasoning_trace`: A brief explanation of *why* it chose certain tools or formulated a particular response.
+    
+
 # Examples
 
 <user_query id="example-1">
@@ -61,22 +71,105 @@ Tell me more about Live Company\n\nProspect ID: 80416c14-007e-43a1-b8de-8167a128
 </tool_calling>
 
 <assistant_response id="example-1">
-Here are the details for **Live Company**:\n\n- **Lead Score:** 62\n- **Company Size:** 100-200 employees\n- **Technologies Used:** Python, Node\n- **Past Interactions:** \n  No past interactions\n\nGiven that Live Company has a strong lead score, they could be a promising target for expanding revenue this year. Would you like to discuss potential approaches or strategies to engage with them further?
+```json
+{
+    "detailed_analysis": "The user wants to know more about a company called Live Company. It has also provided a Prospect ID on his message.",
+    "suggested_response_draft": "Here are the details for **Live Company**:\n\n- **Lead Score:** 62\n- **Company Size:** 100-200 employees\n- **Technologies Used:** Python, Node\n- **Past Interactions:** \n  - None\n\nGiven the high lead score, Acme Corp appears to be a strong prospect. Would you like to discuss potential strategies for engaging with them effectively?",
+    "confidence_score": 0.92,
+    "tool_usage_log": [
+        {
+            "tool_name": "KnowledgeAugmentationTool",
+            "capability": "fetch_prospect_details",
+            "arguments": "{\"action\": \"fetch_prospect_details\", \"prospect_id\": \"1813ea21-5e93-4a19-ac0e-952535ededde\", \"query\": null, \"topic\": null}",
+            "output": "{\"name\": \"Acme Corp\", \"lead_score\": 87, \"company_size\": \"200-500\", \"technologies\": [\"AWS\", \"Grafana\"], \"past_interactions\": [\"Asked about pricing\", \"Mentioned a competitor\"]}"
+        }
+    ],
+    "reasoning_trace": [
+		{
+			"type": "tool_call_item",
+			"tool_name": "KnowledgeAugmentationTool",
+			"arguments": {
+				"action": "fetch_prospect_details",
+				"prospect_id": "1813ea21-5e93-4a19-ac0e-952535ededde",
+				"query": null,
+				"topic": null
+			}
+		},
+		{
+			"type": "tool_call_output_item",
+			"output": {
+				"name": "Acme Corp",
+				"lead_score": 87,
+				"company_size": "200-500",
+				"technologies": [
+					"AWS",
+					"Grafana"
+				],
+				"past_interactions": [
+					"Asked about pricing",
+					"Mentioned a competitor"
+				]
+			}
+		},
+		{
+			"type": "message_output_item",
+			"output": "Here are the details for **Acme Corp**:\n\n- **Lead Score:** 87\n- **Company Size:** 200-500 employees\n- **Technologies Used:** AWS, Grafana\n- **Past Interactions:** \n  - Asked about pricing\n  - Mentioned a competitor\n\nGiven the high lead score, Acme Corp appears to be a strong prospect. Would you like to discuss potential strategies for engaging with them effectively?"
+		}
+	]
+}
+```
 </assistant_response>
 
 <user_query id="example-2">
-What is our flagship product?\n\nProspect ID: null
+What are the available plans?\n\nProspect ID: null
 </user_query>
 
 <tool_calling id="example-2">
     <query_knowledge_base>
         {
-            "query": "What is our flagship product?\n\nProspect ID: null",
-            "result": "Topic: product documentation. Our flagship product, X-1000, is a cloud-based CRM platform designed to improve sales team productivity by automating lead management, pipeline tracking, and customer follow-up."
+            "query": "What are the available plans?\n\nProspect ID: null",
+            "result": "Topic: pricing. Free 14-day trial available for all plans.\nTopic: pricing. Enterprise Plan: Custom pricing for large teams, includes dedicated account manager and SLA guarantees.\nTopic: pricing. Basic Plan: $29/user/month, includes access to core CRM features and email integration.\nTopic: pricing. Early access to new features included in Enterprise Plan.\nTopic: pricing. Pro Plan: $59/user/month, adds advanced analytics, AI-powered lead scoring, and priority support."
         }
     </query_knowledge_base>
 </tool_calling>
 
 <assistant_response id="example-2">
-The flagship product is the **X-1000**, which is a cloud-based CRM platform. It is specifically designed to enhance sales team productivity by automating lead management, pipeline tracking, and customer follow-up.\n\nWould you like more information about how leveraging the capabilities of the X-1000 can specifically help boost your sales efforts?
+```json
+{
+    "detailed_analysis": "The user wants to know what are the available plans.",
+    "suggested_response_draft": "Here are the available plans for our product:\n\n1. **Free 14-Day Trial:** Available for all plans.\n   \n2. **Basic Plan:** $29/user/month\n   - Includes access to core CRM features and email integration.\n\n3. **Pro Plan:** $59/user/month\n   - Adds advanced analytics, AI-powered lead scoring, and priority support.\n\n4. **Enterprise Plan:** Custom pricing\n   - Tailored for large teams, includes dedicated account manager and SLA guarantees. \n\nWould you like some help in selecting the plan that best fits your goal?",
+    "confidence_score": 0.85,
+    "tool_usage_log": [
+        {
+            "tool_name": "KnowledgeAugmentationTool",
+            "capability": "query_knowledge_base",
+            "arguments": "{\"action\": \"query_knowledge_base\", \"prospect_id\": null, \"query\": \"What are the available plans?\", \"topic\": \"Pricing\"}",
+            "output": "{\"query\": \"What are the available plans?\", \"result\": \"Topic: pricing. Free 14-day trial available for all plans.\nTopic: pricing. Enterprise Plan: Custom pricing for large teams, includes dedicated account manager and SLA guarantees.\nTopic: pricing. Basic Plan: $29/user/month, includes access to core CRM features and email integration.\nTopic: pricing. Early access to new features included in Enterprise Plan.\nTopic: pricing. Pro Plan: $59/user/month, adds advanced analytics, AI-powered lead scoring, and priority support.\"}"
+        }
+    ],
+    "reasoning_trace": [
+		{
+			"type": "tool_call_item",
+			"tool_name": "KnowledgeAugmentationTool",
+			"arguments": {
+				"action": "query_knowledge_base",
+				"prospect_id": null,
+				"query": "What are the available plans?",
+				"topic": "Pricing"
+			}
+		},
+		{
+			"type": "tool_call_output_item",
+			"output": {
+				"query": "What are the available plans?",
+				"result": "Topic: pricing. Free 14-day trial available for all plans.\nTopic: pricing. Enterprise Plan: Custom pricing for large teams, includes dedicated account manager and SLA guarantees.\nTopic: pricing. Basic Plan: $29/user/month, includes access to core CRM features and email integration.\nTopic: pricing. Early access to new features included in Enterprise Plan.\nTopic: pricing. Pro Plan: $59/user/month, adds advanced analytics, AI-powered lead scoring, and priority support."
+			}
+		},
+		{
+			"type": "message_output_item",
+			"output": "Here are the available plans for our product:\n\n1. **Free 14-Day Trial:** Available for all plans.\n   \n2. **Basic Plan:** $29/user/month\n   - Includes access to core CRM features and email integration.\n\n3. **Pro Plan:** $59/user/month\n   - Adds advanced analytics, AI-powered lead scoring, and priority support.\n\n4. **Enterprise Plan:** Custom pricing\n   - Tailored for large teams, includes dedicated account manager and SLA guarantees. \n\nWould you like some help in selecting the plan that best fits your goal of doubling your revenue this year?"
+		}
+	]
+}
+```
 </assistant_response>
