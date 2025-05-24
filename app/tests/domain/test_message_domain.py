@@ -11,11 +11,34 @@ class TestMessageDomain:
     @pytest.mark.asyncio
     async def test_process_message_with_proper_inputs_returns(self):
         mock = SimpleNamespace(
-            new_items=[
-                { "type": "tool_call_item" },
-                { "type": "message_output_item" }
-            ],
-            final_output="My final pricing is just fine"
+            final_output={
+                "detailed_analysis": "The user is asking about pricing",
+                "suggested_response_draft": "Our pricing takes in account lead score",
+                "confidence_score": 0.56,
+                "tool_usage_log": [
+                    {
+                        "tool_name": "Unit test tool",
+                        "capability": "capability",
+                        "arguments": "{\"action\": \"fetch_prospect_details\", \"prospect_id\": \"1813ea21-5e93-4a19-ac0e-952535ededde\", \"query\": null, \"topic\": null}",
+                        "output": "{\"name\": \"Acme Corp\", \"lead_score\": 87, \"company_size\": \"200-500\", \"technologies\": [\"AWS\", \"Grafana\"], \"past_interactions\": [\"Asked about pricing\", \"Mentioned a competitor\"]}"
+                    }
+                ],
+                "reasoning_trace": [
+                    {
+                        "type": "tool_call_item",
+                        "tool_name": "Unit test tool",
+                        "arguments": { }
+                    },
+                    {
+                        "type": "tool_call_output_item",
+                        "output": { }
+                    },
+                    {
+                        "type": "message_output_item",
+                        "output": "Here are the available plans for our product:\n\n1. **Free 14-Day Trial:** Available for all plans.\n   \n2. **Basic Plan:** $29/user/month\n   - Includes access to core CRM features and email integration.\n\n3. **Pro Plan:** $59/user/month\n   - Adds advanced analytics, AI-powered lead scoring, and priority support.\n\n4. **Enterprise Plan:** Custom pricing\n   - Tailored for large teams, includes dedicated account manager and SLA guarantees. \n\nWould you like some help in selecting the plan that best fits your goal of doubling your revenue this year?"
+                    }
+                ]
+            }
         )
 
         mock_service = AsyncMock(spec=MessageService)
@@ -41,6 +64,10 @@ class TestMessageDomain:
         ]
         mock_service.run_agent.assert_awaited_once_with(expected_inputs)
 
-        assert result["inputs"] == expected_inputs
-        assert result["stacktrace"] == mock.new_items
-        assert result["output"] == mock.final_output
+        print(result)
+
+        assert result["detailed_analysis"] is not None
+        assert result["suggested_response_draft"] is not None
+        assert result["confidence_score"] >= 0 and result["confidence_score"] <= 1
+        assert len(result["tool_usage_log"]) == 1
+        assert len(result["reasoning_trace"]) == 3

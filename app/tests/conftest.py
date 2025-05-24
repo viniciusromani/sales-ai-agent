@@ -1,6 +1,9 @@
 import pytest
+from dotenv import load_dotenv
 from unittest.mock import AsyncMock, MagicMock, patch
 
+
+load_dotenv()
 
 @pytest.fixture
 def mock_qdrant():
