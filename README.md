@@ -1,8 +1,9 @@
 ## Description
 
-AI Sales Agent is an autonomous module designed to assist sales teams by intelligently handling prospect interactions. Upon receiving a new message from a prospect within an ongoing conversation, the agent analyzes the message in context, leverages external knowledge sources and internal tools, and determines the most effective response.
+AI Sales Agent is a modular and extensible system designed to assist sales teams by autonomously handling prospect conversations. Upon receiving a new message in an ongoing conversation, the agent leverages context, retrieval-augmented generation (RAG), and integrated tools to generate an informed and context-aware response.
 
-This project focuses on approaching different themes related to API Design, Code quality, LLM integration and RAG. It makes use of a vectorial database (qdrant), it uses the official OpenAI SDK for building agents and it is also dockerized for further deploy. The system is built to support modular evaluation and future scalability, enabling easy integration with real-world sales workflows.
+This project demonstrates the usage of LLMs through OpenAI’s official SDK, integrates a vector database (Qdrant) for semantic retrieval, and follows best practices in API design, software modularity, and containerization. It is designed with future scalability and production-readiness in mind.
+
 
 ### Built With
 
@@ -85,11 +86,11 @@ Obs. It will generate a folder `htmlcov/` on project root. Inside this folder th
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Create migrations to apply database changes (currently using `syncronize: true` which is not recommended for production environment)
-- [ ] Fix query-param parse on get endpoint using `class-validator` and `class-transformer` library
-- [ ] Allow database batch size to be defined on the fly
-- [ ] Create unit tests for `currency-service`
-- [ ] Create some integration tests (there is none now)
+- [ ] Implement [eval](https://platform.openai.com/docs/guides/evals) to follow how the agent is performing
+- [ ] Create agent evaluation pipeline in order to keep track of its performance
+- [ ] Create a data ingestion pipeline that is not attached to application startup
+- [ ] Move error handling exclusively to routers
+- [ ] Improve logging
 
 <!-- CONTRIBUTING -->
 ## Contributing
