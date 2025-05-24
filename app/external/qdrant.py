@@ -1,5 +1,5 @@
 import os
-from qdrant_client import AsyncQdrantClient
+from qdrant_client import AsyncQdrantClient, models
 from .openai import OpenAIClientSingleton
 
 

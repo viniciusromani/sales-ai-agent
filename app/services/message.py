@@ -10,6 +10,6 @@ class MessageService:
         self.agent = agent
 
     async def run_agent(self, inputs: List[ConversationContext]) -> str:
-        # with trace("Vinicius Romani - Sales AI Agent - Technical Challenge"):
-        result = await Runner.run(self.agent, inputs)
-        return result
+        with trace("Vinicius Romani - Sales AI Agent - Technical Challenge"):
+            result = await Runner.run(self.agent, inputs)
+            return result
