@@ -109,3 +109,6 @@ ENV/
 
 # .idea
 .idea/
+
+# qdrant
+qdrant_data/

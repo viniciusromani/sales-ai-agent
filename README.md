@@ -87,6 +87,8 @@ Obs. It will generate a folder `htmlcov/` on project root. Inside this folder th
 ## Roadmap
 
 - [ ] Implement [eval](https://platform.openai.com/docs/guides/evals) to follow how the agent is performing
+- [ ] Improve error handling
+- [ ] Implement LLM score performance, feedback loop and data drift detection
 - [ ] Create agent evaluation pipeline in order to keep track of its performance
 - [ ] Create a data ingestion pipeline that is not attached to application startup
 - [ ] Move error handling exclusively to routers
